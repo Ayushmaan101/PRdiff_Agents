@@ -3,10 +3,10 @@ from state import AgentState
 from agents import reviewer_agent, developer_agent
 from github_utils import get_pr_diff, post_pr_comment
 
-# 1. Initialize the Graph with our State definition
+# 1. Initialize the Graph with State definition
 workflow = StateGraph(AgentState)
 
-# 2. Add our "Nodes" (The Agents)
+# 2. Add Nodes (Agents)
 workflow.add_node("reviewer", reviewer_agent)
 workflow.add_node("developer", developer_agent)
 
@@ -41,7 +41,7 @@ workflow.add_edge("developer", "reviewer")
 # 6. Compile the graph into an executable application
 app = workflow.compile()
 
-# --- EXECUTION BLOCK ---
+# Execution Block
 if __name__ == "__main__":
     # CONFIGURATION: Update these two values for your test
     # Format: "username/repository-name"
