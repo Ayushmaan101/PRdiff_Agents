@@ -43,12 +43,11 @@ app = workflow.compile()
 
 # Execution Block
 if __name__ == "__main__":
-    # CONFIGURATION: Update these two values for your test
-    # Format: "username/repository-name"
-    REPO_NAME = "Ayushmaan101/PRdiff_test" 
+    # Update these two values for your test - both can be obtained from the PR URL
+    REPO_NAME = "Ayushmaan101/PRdiff_test" # Format: "username/repository-name"
     PR_NUMBER = 1 
 
-    print(f"--- 1. FETCHING PR #{PR_NUMBER} FROM {REPO_NAME} ---")
+    print(f"1. FETCHING PR #{PR_NUMBER} FROM {REPO_NAME}")
     try:
         diff, title = get_pr_diff(REPO_NAME, PR_NUMBER)
         print(f"Successfully fetched PR: {title}\n")
@@ -65,7 +64,7 @@ if __name__ == "__main__":
         "messages": []
     }
 
-    print("--- 2. STARTING MULTI-AGENT REVIEW WORKFLOW ---")
+    print("2. STARTING MULTI-AGENT REVIEW WORKFLOW")
     final_state = None
     
     # Run the graph and stream the updates from each node
@@ -77,7 +76,7 @@ if __name__ == "__main__":
             
             # Print a snippet of what happened for visibility
             if key == "reviewer":
-                status = "APPROVED ✅" if value['is_approved'] else "CHANGES REQUESTED ❌"
+                status = "APPROVED" if value['is_approved'] else "CHANGES REQUESTED"
                 print(f"Status: {status}")
             elif key == "developer":
                 print(f"Developer Revision Count: {value['revision_count']}")
@@ -87,11 +86,11 @@ if __name__ == "__main__":
     # 7. Post the final result back to the GitHub PR
     if final_state:
         if final_state["is_approved"]:
-            summary = "### ✅ AI Review: APPROVED\n"
+            summary = "AI Review: APPROVED\n"
             summary += f"The agent team has reviewed the PR and verified the fixes.\n\n"
             summary += f"**Final Revision:**\n{final_state['messages'][-1].content}"
         else:
-            summary = "### ⚠️ AI Review: MAX REVISIONS REACHED\n"
+            summary = "AI Review: MAX REVISIONS REACHED\n"
             summary += "The agents were unable to reach an approved state within the revision limit. Please review the manual logs."
         
         try:
@@ -100,7 +99,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error posting to GitHub: {e}")
 
-    # OPTIONAL: Save the graph visualization
+    # Saving the graph visualization
     try:
         app.get_graph().draw_mermaid_png(output_file_path="graph_viz.png")
         print("\nWorkflow visualization saved as 'graph_viz.png'")
