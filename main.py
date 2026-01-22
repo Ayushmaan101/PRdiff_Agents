@@ -81,7 +81,7 @@ if __name__ == "__main__":
             elif key == "developer":
                 print(f"Developer Revision Count: {value['revision_count']}")
 
-    print("\n--- 3. WORKFLOW COMPLETE ---")
+    print("3. WORKFLOW COMPLETE")
 
     # 7. Post the final result back to the GitHub PR
     if final_state:
