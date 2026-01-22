@@ -26,3 +26,9 @@ The system follows a stateful directed graph:
 - **Ollama** (Local Model Inference)
 - **PyGithub** (GitHub API Wrapper)
 - **Ubuntu/WSL2** (Development Environment)
+
+## If you want to clone my setup exactly, you just need to run this in their terminal:
+"conda env create -f environment.yml"
+
+## Workflow Visualization
+![Project Graph](./graph_viz.png)
