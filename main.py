@@ -3,42 +3,42 @@ from state import AgentState
 from agents import reviewer_agent, developer_agent
 from github_utils import get_pr_diff, post_pr_comment
 
-# 1. Initialize the Graph with State definition
+# 1. Initialize the Graph
 workflow = StateGraph(AgentState)
 
-# 2. Add Nodes (Agents)
+# 2.Nodes (Agents)
 workflow.add_node("reviewer", reviewer_agent)
 workflow.add_node("developer", developer_agent)
 
-# 3. Define the Flow logic
+# 3.Flow logic
 workflow.set_entry_point("reviewer")
 
-# 4. Define the "Conditional Edge" logic
+# 4.Conditional Edge logic
 def decide_to_continue(state: AgentState):
     """
     Determines if the graph should loop back for a fix or exit.
     """
     if state["is_approved"]:
         return "end"
-    if state["revision_count"] >= 3: # Safety break to prevent infinite loops
+    if state["revision_count"] >= 3: # Safety break, prevents infinite loops
         print("\n--- MAX REVISIONS REACHED: Terminating Workflow ---")
         return "end"
     return "continue"
 
-# 5. Add the routing rules
+# 5. Routing rules
 workflow.add_conditional_edges(
     "reviewer",
     decide_to_continue,
     {
         "continue": "developer",
         "end": END
-    }
+     }
 )
 
 # After the developer fixes the code, it always goes back to the reviewer
 workflow.add_edge("developer", "reviewer")
 
-# 6. Compile the graph into an executable application
+# 6.Compile the graph into an executable application
 app = workflow.compile()
 
 # Execution Block
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         print(f"Error fetching PR: {e}")
         exit()
 
-    # Initial state for the graph
+    # Initial state for graph
     inputs = {
         "code_snippet": diff,
         "review_comments": [],
@@ -67,10 +67,10 @@ if __name__ == "__main__":
     print("2. STARTING MULTI-AGENT REVIEW WORKFLOW")
     final_state = None
     
-    # Run the graph and stream the updates from each node
+    # Run the graph, stream updates from each node
     for output in app.stream(inputs):
         for key, value in output.items():
-            # Update the local final_state variable with the latest data
+            # Update the local final_state variable with latest avl. data
             final_state = value 
             print(f"\n[NODE COMPLETED]: {key.upper()}")
             
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error posting to GitHub: {e}")
 
-    # Saving the graph visualization
+    # Run for the graph visualization
     try:
         app.get_graph().draw_mermaid_png(output_file_path="graph_viz.png")
         print("\nWorkflow visualization saved as 'graph_viz.png'")
