@@ -26,14 +26,14 @@ async def run_orchestrator():
         args=["mcp_server.py"], 
     )
 
-    print(f"🚀 Starting MCP Orchestrator for {target_repo} #{target_pr}...")
+    print(f"Starting MCP Orchestrator for {target_repo} #{target_pr}")
 
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
-            print(f"✅ --- Connected to Server A ---")
+            print(f"Connected to Server A")
 
-            print(f"📡 Fetching diff for {target_repo}...")
+            print(f"Fetching diff for {target_repo}")
             try:
                 mcp_result = await session.call_tool("fetch_diff", arguments={
                     "repo_name": target_repo,
@@ -41,7 +41,7 @@ async def run_orchestrator():
                 })
                 initial_diff = mcp_result.content[0].text
             except Exception as e:
-                print(f"❌ Error fetching diff: {e}")
+                print(f"Error fetching diff: {e}")
                 return
 
             app = create_graph()
@@ -55,7 +55,7 @@ async def run_orchestrator():
                 "messages": []
             }
 
-            print("🤖 --- Starting Internal Review-Fix Loop ---")
+            print("Starting Internal Review-Fix Loop")
 
             current_final_state = state
 
@@ -65,26 +65,24 @@ async def run_orchestrator():
                     current_final_state.update(state_update)
                     
                     if node_name == "reviewer":
-                        status = "APPROVED ✅" if state_update.get("is_approved") else "CHANGES REQUESTED ❌"
+                        status = "APPROVED" if state_update.get("is_approved") else "CHANGES REQUESTED ❌"
                         print(f"Status: {status}")
 
             if current_final_state["review_comments"]:
                 final_feedback = current_final_state["review_comments"][-1]
             else:
                 final_feedback = "No feedback generated."
-                
-            status_icon = "✅" if current_final_state["is_approved"] else "⚠️"
             
-            print(f"\n🚀 Posting final results ({status_icon}) to GitHub via MCP...")
+            print(f"\nPosting final results to GitHub via MCP")
             try:
                 await session.call_tool("add_comment", arguments={
                     "repo_name": target_repo,
                     "pr_number": target_pr,
-                    "comment": f"## AI Review Final Report {status_icon}\n\n{final_feedback}"
+                    "comment": f"## AI Review Final Report\n\n{final_feedback}"
                 })
-                print("✅ Final comment posted successfully!")
+                print("Final comment posted successfully")
             except Exception as e:
-                print(f"❌ Error posting comment: {e}")
+                print(f"Error posting comment: {e}")
 
 if __name__ == "__main__":
     try:
