@@ -1,18 +1,12 @@
-from typing import Annotated, TypedDict, List
-from langgraph.graph.message import add_messages
+from typing import TypedDict, Annotated, List
+from langchain_core.messages import BaseMessage
+import operator
 
 class AgentState(TypedDict):
-    # The current code being reviewed
-    code_snippet: str
-    
-    # Comments from Agent 1 (The Reviewer)
-    review_comments: List[str]
-    
-    # Whether the PR is approved
-    is_approved: bool
-    
-    # The shared conversation history between agents
-    messages: Annotated[list, add_messages]
-    
-    # Tracking the number of revisions to prevent infinite loops
-    revision_count: int
+    repo_name: str
+    pr_number: int
+    diff: str                   # Holds the current version of the code
+    review_comments: List[str]  # History of AI feedback
+    is_approved: bool           # The exit condition
+    revision_count: int         # Counter to prevent infinite loops
+    messages: Annotated[List[BaseMessage], operator.add]
