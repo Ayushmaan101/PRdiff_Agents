@@ -1,6 +1,6 @@
 import asyncio
 import os
-import sys  # NEW: For terminal arguments
+import sys
 from dotenv import load_dotenv
 
 from mcp import ClientSession, StdioServerParameters
@@ -10,16 +10,14 @@ from agents import create_graph
 load_dotenv()
 
 async def run_orchestrator():
-    # --- DYNAMIC CONFIGURATION ---
-    # Usage: python mcp_client_host.py Ayushmaan101/PRdiff_test 1
+    # Eg usage: python mcp_client_host.py Ayushmaan101/PRdiff_test 1
     if len(sys.argv) > 2:
         target_repo = sys.argv[1]
         target_pr = int(sys.argv[2])
     else:
-        # Fallback to defaults if no arguments provided
+        #defaults arguments
         target_repo = "Ayushmaan101/PRdiff_test"
         target_pr = 1
-    # ------------------------------
 
     server_params = StdioServerParameters(
         command="python",
@@ -55,7 +53,7 @@ async def run_orchestrator():
                 "messages": []
             }
 
-            print("Starting Internal Review-Fix Loop")
+            print("Starting Internal Review Fix Loop")
 
             current_final_state = state
 
@@ -65,7 +63,7 @@ async def run_orchestrator():
                     current_final_state.update(state_update)
                     
                     if node_name == "reviewer":
-                        status = "APPROVED" if state_update.get("is_approved") else "CHANGES REQUESTED ❌"
+                        status = "APPROVED" if state_update.get("is_approved") else "CHANGES REQUESTED"
                         print(f"Status: {status}")
 
             if current_final_state["review_comments"]:
