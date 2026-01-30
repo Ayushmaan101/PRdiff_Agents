@@ -2,12 +2,25 @@ from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph, END
 from state import AgentState
 
-LLM_URL = "http://172.31.192.1:11434"
+import os
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
 
+load_dotenv()
+
+LLM_URL = "http://127.0.0.1:11434"
+
+'''
 model = ChatOllama(
-    model="qwen2.5-coder:7b",
+    model="qwen2.5-coder:1.5b",
+    timeout=300,
     base_url=LLM_URL,
     temperature=0
+)'''
+
+model = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    groq_api_key=os.getenv("GROQ_API_KEY")
 )
 
 def reviewer_agent(state: AgentState):

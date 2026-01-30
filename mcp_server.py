@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import mcp.server.fastmcp as fastmcp
 from github_utils import get_pr_diff, post_pr_comment
 
